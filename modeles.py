@@ -34,6 +34,26 @@ def test_operations_loaded(operations):
     assert operations[0].centre == "M1"
     print("Test OK : opérations chargées correctement")
 
+# je crois que c'est pas à faire dans la semaine 1    
+def test_voisins(operations):
+    voisins = {}
+    for op1 in operations:
+        voisins[op1.codop] = []
+        for op2 in operations:
+            if op1 != op2 and op1.centre == op2.centre:
+                voisins[op1.codop].append(op2.codop)
+    return voisins
+
+voisins = test_voisins(example_operations)
+print(voisins)
+
+
 
 if __name__ == "__main__":
     test_operations_loaded(example_operations)
+
+
+#verif contenu des objets
+for op in example_operations:
+    print(op)
+
