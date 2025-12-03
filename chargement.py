@@ -1,6 +1,6 @@
 import csv
 import json
-from .models import Operation
+from .operation import Operation
 
 def load_from_csv(path):
     operations = []
