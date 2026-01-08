@@ -1,96 +1,75 @@
 from pathlib import Path
 from parse_data import load_operations, load_machines
-from graph_builder import build_graph_immediate
+from graph_builder import build_graph_immediate, expand_graph_k_hops
 from coloring import greedy_coloring
-from palette import generate_palette
+from palette import build_color_map, build_hex_color_map
 from visualization import plot_gantt
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
-OUTPUT = ROOT / "output"
+OUT = ROOT / "output"
 
+def run_scenario(operations, machines, criterion, level):
+    """Exécute, colorie et sauvegarde un scénario précis."""
+    print(f"\n--- Exécution : {criterion.upper()} - Voisinage L{level} ---")
+    
+    # 1) Construction du graphe
+    g1 = build_graph_immediate(operations, criterion=criterion)
+    graph = g1 if level == 1 else expand_graph_k_hops(g1, k=level)
+
+    # 2) Coloration (Algorithme Welsh-Powell par défaut)
+    coloring_idx = greedy_coloring(graph, order="largest_first")
+    nb_colors = max(coloring_idx.values()) + 1 if coloring_idx else 0
+
+    # 3) Préparation des couleurs
+    node_to_rgb = build_color_map(coloring_idx)
+    node_to_hex = build_hex_color_map(coloring_idx)
+
+    # 4) Export TXT
+    file_name = f"coloration_{criterion}_L{level}.txt"
+    out_file = OUT / file_name
+    with out_file.open("w", encoding="utf-8") as f:
+        f.write("centre;product;of;sequence;op;start;end;color\n")
+        for op in operations:
+            key = getattr(op, criterion)
+            color = node_to_hex.get(key, "#FFFFFF")
+            f.write(f"{op.centre};{op.product};{op.of};{op.sequence};{op.op};"
+                    f"{op.start};{op.end};{color}\n")
+
+    # 5) Génération du Gantt
+    gantt_path = OUT / f"gantt_{criterion}_L{level}.png"
+    plot_gantt(
+        operations=operations,
+        node_to_color=node_to_rgb,
+        criterion=criterion,
+        title=f"Gantt - Coloration par {criterion.upper()} (Voisinage L{level}) - {nb_colors} couleurs",
+        save_path=str(gantt_path),
+        min_label_hours=12.0 # Ajuste pour voir plus ou moins de texte
+    )
+    
+    print(f"Terminé : {nb_colors} couleurs utilisées. Image : {gantt_path.name}")
 
 def main():
-    # 1) Chargement des données
+    OUT.mkdir(exist_ok=True)
     operations = load_operations(DATA / "DataPlanification.txt")
     machines = load_machines(DATA / "DataMachine.txt")
 
-    # Sécurité : vérifier qu'on a bien des données
     if not operations:
-        print("Aucune opération chargée. Vérifie DataPlanification.txt.")
+        print("Erreur : Aucune donnée chargée.")
         return
 
-    if not machines:
-        print("Aucune machine chargée. Vérifie DataMachine.txt.")
-        return
+    # On lance les 4 combinaisons pour le rapport final
+    scenarios = [
+        ("of", 1),
+        ("of", 2),
+        ("product", 1),
+        ("product", 2)
+    ]
 
-    # 2) Construction du graphe de voisinage par OF (Objectif 1)
-    graph = build_graph_immediate(operations, criterion="of")
+    for crit, lvl in scenarios:
+        run_scenario(operations, machines, crit, lvl)
 
-    # 3) Coloration gloutonne du graphe
-    if not graph:
-        print("Graphe vide (aucun OF trouvé).")
-        return
-
-    colors_idx = greedy_coloring(graph)
-
-    nb_colors = max(colors_idx.values()) + 1
-    palette = generate_palette(nb_colors)
-
-    # Association OF -> couleur hex
-    color_by_of = {of: palette[idx] for of, idx in colors_idx.items()}
-
-    # 4) Création du dossier output si besoin
-    OUTPUT.mkdir(exist_ok=True)
-
-    # 5) Écriture d'un fichier texte de résultat (Objectif 1)
-    out_file = OUTPUT / "coloration_of.txt"
-    with out_file.open("w", encoding="utf-8") as f:
-        # en-tête
-        f.write(
-            "centre;product;of;sequence;op;start;end;color\n"
-        )
-        # lignes
-        for op in operations:
-            color = color_by_of.get(op.of, "#000000")
-            f.write(
-                f"{op.centre};"
-                f"{op.product};"
-                f"{op.of};"
-                f"{op.sequence};"
-                f"{op.op};"
-                f"{op.start.isoformat(sep=' ')};"
-                f"{op.end.isoformat(sep=' ')};"
-                f"{color}\n"
-            )
-
-    # 6) Affichage de quelques statistiques utiles
-    distinct_of = {op.of for op in operations}
-    print("=== Statistiques (Objectif 1) ===")
-    print(f"Nombre d'opérations      : {len(operations)}")
-    print(f"Nombre de machines       : {len(machines)}")
-    print(f"Nombre d'OF distincts    : {len(distinct_of)}")
-    print(f"Nombre de sommets graphe : {len(graph)}")
-    print(f"Nombre de couleurs utilisé : {nb_colors}")
-    print(f"Fichier résultat écrit dans : {out_file}")
-
-    # 7) (Optionnel pour semaine 2) Tentative de Gantt simple
-    #    La fonction plot_gantt est encore un squelette, on le complétera plus tard.
-    try:
-        plot_gantt(
-            operations=operations,
-            machines=machines,
-            color_by_key=color_by_of,
-            criterion="of",
-            title="Coloration par OF",
-            output_path=str(OUTPUT / "gantt_of.png"),
-        )
-        print(f"Image Gantt écrite dans : {OUTPUT / 'gantt_of.png'}")
-    except Exception as e:
-        # Si visualization.py n'est pas encore implémenté, on ne bloque pas le projet.
-        print("plot_gantt non fonctionnel pour le moment (ce n'est pas grave pour la semaine 2).")
-        print(f"Erreur : {e}")
-
+    print("\n✅ Tous les scénarios ont été générés dans le dossier /output !")
 
 if __name__ == "__main__":
     main()
