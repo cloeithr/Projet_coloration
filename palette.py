@@ -1,32 +1,28 @@
-from colorsys import hsv_to_rgb
+from __future__ import annotations
+from typing import Dict, Tuple, List
 
-def generate_palette(n: int) -> list[str]:
-    """
-    Génère n couleurs pastel **très distinctes** en format HEX (#RRGGBB)
-    en utilisant un espacement régulier dans le cercle HSV.
-    """
-    colors = []
-    for i in range(n):
-        # 1. Teinte espacée régulièrement
-        h = i / n  
+# Palette de couleurs contrastées pour le Gantt
+DEFAULT_PALETTE: List[Tuple[float, float, float]] = [
+    (0.55, 0.80, 0.35),  # vert
+    (0.90, 0.40, 0.40),  # rouge doux
+    (0.35, 0.65, 0.90),  # bleu
+    (0.75, 0.55, 0.90),  # violet
+    (0.95, 0.75, 0.35),  # orange
+    (0.45, 0.85, 0.80),  # cyan
+    (0.85, 0.85, 0.45),  # jaune
+    (0.70, 0.70, 0.70),  # gris
+    (0.55, 0.55, 0.95),  # indigo
+    (0.95, 0.55, 0.75),  # rose
+]
 
-        # 2. Saturation réduite -> pastel
-        s = 0.45  
+def rgb_to_hex(rgb: Tuple[float, float, float]) -> str:
+    """Convertit un tuple (R, G, B) en format #RRGGBB."""
+    return '#%02x%02x%02x' % (int(rgb[0]*255), int(rgb[1]*255), int(rgb[2]*255))
 
-        # 3. Luminosité élevée -> lisible sur Gantt
-        v = 0.95  
+def build_color_map(coloring: Dict[str, int]) -> Dict[str, Tuple[float, float, float]]:
+    """Map entre l'identifiant (OF/Produit) et son tuple RGB."""
+    return {node: DEFAULT_PALETTE[idx % len(DEFAULT_PALETTE)] for node, idx in coloring.items()}
 
-        # Conversion HSV -> RGB
-        r, g, b = hsv_to_rgb(h, s, v)
-
-        # Conversion RGB -> HEX
-        hex_color = '#%02x%02x%02x' % (int(r*255), int(g*255), int(b*255))
-        colors.append(hex_color)
-
-    return colors
-def hsv_distance(h1: float, h2: float) -> float:
-    """
-    Distance circulaire entre deux teintes (0 à 1).
-    """
-    d = abs(h1 - h2)
-    return min(d, 1 - d)
+def build_hex_color_map(coloring: Dict[str, int]) -> Dict[str, str]:
+    """Map entre l'identifiant (OF/Produit) et son code Hexadécimal."""
+    return {node: rgb_to_hex(DEFAULT_PALETTE[idx % len(DEFAULT_PALETTE)]) for node, idx in coloring.items()}
