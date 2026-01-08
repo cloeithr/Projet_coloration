@@ -1,81 +1,60 @@
 from collections import defaultdict
 
-def construire_graphe_conflits(operations_par_machine, critere='codprod'):
+def construire_graphe_conflits(operations_par_machine, critere='code_produit', niveau_voisinage=1):
     """
-    Construit le graphe de conflit de Niveau 1 (voisins directs).
-    Les nœuds du graphe sont les valeurs uniques du 'critere' choisi (ex: 'codprod').
-    Une arête relie deux nœuds si leurs opérations sont consécutives sur une machine.
+    Construit le graphe de conflit.
+    Niveau 1 : Opérations adjacentes (i, i+1).
+    Niveau 2 : Opérations séparées par une (i, i+2).
     
-    Args:
-        operations_par_machine (dict): Dictionnaire de machines contenant des listes 
-                                       d'objets Operation triés chronologiquement.
-        critere (str): Le champ de l'objet Operation à utiliser comme nœud (ex: 'codprod').
-        
-    Returns:
-        dict: Le graphe de conflit. Clé = Nœud (str), Valeur = Ensemble des voisins (set[str]).
+    Correction : On utilise la position dans la liste (séquence) plutôt que
+    l'égalité stricte des dates, pour gérer les pauses entre opérations.
     """
-    
-    # Utilise defaultdict(set) pour que chaque nœud (critère) ait un ensemble de voisins,
-    # ce qui garantit qu'il n'y a pas de doublons dans la liste des voisins.
     graphe_conflit = defaultdict(set)
     
-    # 1. Parcourir chaque machine
+    # Compteurs pour le debug
+    stats = {"N1": 0, "N2": 0}
+
     for machine, operations in operations_par_machine.items():
+        # 1. Initialiser les nœuds (pour ne pas oublier les produits isolés)
+        for op in operations:
+            valeur_critere = getattr(op, critere)
+            if valeur_critere not in graphe_conflit:
+                graphe_conflit[valeur_critere] = set()
+
+        n = len(operations)
         
-        # 2. Parcourir la liste TRIÉE des opérations de cette machine
-        # On compare l'opération i avec l'opération i+1
-        for i in range(len(operations) - 1):
+        # 2. Parcours de la séquence
+        for i in range(n):
             op_courante = operations[i]
-            op_suivante = operations[i + 1]
-            
-            # --- RÈGLE DU VOISINAGE (NIVEAU 1) ---
-            
-            # A. Récupérer les valeurs du critère pour les deux opérations
-            # (Utilisation de getattr car le critère ('codprod') est une variable)
-            critere_courant = getattr(op_courante, critere)
-            critere_suivant = getattr(op_suivante, critere)
-            
-            # B. Vérifier si les deux opérations sont bien consécutives (dtefin = dtedeb)
-            # ET si les critères sont différents (sinon, pas de conflit de couleur)
-            est_consecutif = (op_courante.date_fin == op_suivante.date_debut)
-            est_conflit = (critere_courant != critere_suivant)
-            
-            if est_consecutif and est_conflit:
-                # 3. Créer l'arête de conflit
+            val_courante = getattr(op_courante, critere)
+
+            # --- NIVEAU 1 : Voisin direct (i + 1) ---
+            if i + 1 < n:
+                op_suivante = operations[i + 1]
+                val_suivante = getattr(op_suivante, critere)
                 
-                # Le nœud A a B comme voisin
-                graphe_conflit[critere_courant].add(critere_suivant)
-                
-                # Le nœud B a A comme voisin (le graphe est non orienté)
-                graphe_conflit[critere_suivant].add(critere_courant)
-                
+                # Si les produits sont différents, il y a conflit
+                if val_courante != val_suivante:
+                    if val_suivante not in graphe_conflit[val_courante]:
+                        stats["N1"] += 1
+                    
+                    graphe_conflit[val_courante].add(val_suivante)
+                    graphe_conflit[val_suivante].add(val_courante)
+
+            # --- NIVEAU 2 : Voisin à 2 sauts (i + 2) ---
+            # On active ceci uniquement si demandé
+            if niveau_voisinage >= 2 and i + 2 < n:
+                op_loin = operations[i + 2]
+                val_loin = getattr(op_loin, critere)
+
+                # Conflit si ce n'est pas le même produit
+                if val_courante != val_loin:
+                    # On ajoute l'arête (c'est un set, donc pas de doublons)
+                    if val_loin not in graphe_conflit[val_courante]:
+                        stats["N2"] += 1
+                        
+                    graphe_conflit[val_courante].add(val_loin)
+                    graphe_conflit[val_loin].add(val_courante)
+
+    print(f"   [DEBUG GRAPHE] Nouveaux conflits détectés -> Voisins Directs: {stats['N1']}, Voisins distants (N2): {stats['N2']}")
     return dict(graphe_conflit)
-
-
-
-
-# --- ZONE DE TEST & INTÉGRATION ---
-
-from numerisation import charger_donnees
-from regrouper_par_machine import regrouper_par_machine
-
-if __name__ == "__main__":
-    # 1. Préparation des données (Phase 1)
-    _, toutes_les_operations = charger_donnees('DataMachine.csv', 'operations.csv')
-    operations_triees = regrouper_par_machine(toutes_les_operations)
-    
-    # 2. Construction du Graphe (Phase 2.1)
-    graphe = construire_graphe_conflits(operations_triees, critere='code_produit')
-    
-    print("\n--- Aperçu du Graphe de Conflit (Niveau 1) ---")
-    
-    # Vérification de notre cas de test MAC106 (PROD03 vs PROD01)
-    if 'PROD03' in graphe:
-        voisins_prod03 = graphe['PROD03']
-        print(f"Les voisins de PROD03 sont : {voisins_prod03}")
-        
-        # Test 2 : Validation du Graphe (comme dans l'architecture)
-        assert 'PROD01' in voisins_prod03
-        print("✅ Test de validation PROD03 <-> PROD01 réussi.")
-    else:
-        print("Le PROD03 n'a pas été trouvé comme nœud dans le graphe.")

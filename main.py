@@ -1,14 +1,8 @@
 import csv
-from datetime import datetime, timedelta
 from collections import defaultdict
 import matplotlib.pyplot as plt
-import random as random
 
-
-# =================================================================
-# FONCTION PRINCIPALE (MAIN)
-# =================================================================
-from models import Operation
+# Imports de tes modules
 from numerisation import charger_donnees
 from regrouper_par_machine import regrouper_par_machine
 from construire_graph_conflit import construire_graphe_conflits
@@ -22,38 +16,42 @@ from gantt_generer import generer_gantt
 def main():
     """Orchestre toutes les étapes du programme."""
     
+    # --- CONFIGURATION ---
     FICHIER_OPERATIONS = 'operations.csv' 
     FICHIER_MACHINES = 'DataMachine.csv'
     CRITERE_DE_COLORATION = 'code_produit' 
     FICHIER_SORTIE = 'resultat_colore.txt'
+    
+    # ICI : On force le niveau 2
+    NIVEAU_VOISINAGE_CIBLE = 2 
 
     print("--- Démarrage du Programme de Coloration de Gantt ---")
     
-    # PHASE 1 : CHARGEMENT & PRÉPARATION
+    # PHASE 1 : CHARGEMENT
     machines_ref, toutes_les_operations = charger_donnees(FICHIER_MACHINES, FICHIER_OPERATIONS)
-    print(f"✅ Total des opérations numérisées : {len(toutes_les_operations)}")
-    
-    operations_triees_par_machine = regrouper_par_machine(toutes_les_operations)
-    print(f"✅ Opérations regroupées et triées par machine.")
+    operations_triees = regrouper_par_machine(toutes_les_operations)
+    print(f"✅ Données chargées et triées.")
     
     # PHASE 2 : CONSTRUCTION DU GRAPHE
-    graphe_conflit = construire_graphe_conflits(operations_triees_par_machine, CRITERE_DE_COLORATION)
-    print(f"✅ Graphe de conflit N1 construit. Nœuds uniques (produits) : {len(graphe_conflit)}")
+    print(f"\n--- Construction du Graphe (Mode Voisinage = {NIVEAU_VOISINAGE_CIBLE}) ---")
+    graphe_conflit = construire_graphe_conflits(
+        operations_triees,
+        CRITERE_DE_COLORATION,
+        niveau_voisinage=NIVEAU_VOISINAGE_CIBLE,
+    )
     
     # PHASE 3 : COLORATION
     couleur_mapping = colorier_graphe(graphe_conflit)
-    
-    operations_colorees = affecter_couleurs(toutes_les_operations, couleur_mapping, CRITERE_DE_COLORATION)
-    print("✅ Couleurs affectées aux objets Operation.")
-    
-    # PHASE 4 : SORTIES ET VISUALISATION
-    
     nombre_chromatique = calculer_nombre_chromatique(couleur_mapping)
-    print(f"\n*** RÉSULTAT CLÉ : Nombre Chromatique Minimal : {nombre_chromatique} ***")
     
+    print(f"\n*** RÉSULTAT FINAL : Nombre Chromatique = {nombre_chromatique} ***")
+    
+    # PHASE 4 : SORTIES
+    operations_colorees = affecter_couleurs(toutes_les_operations, couleur_mapping, CRITERE_DE_COLORATION)
     generer_fichier_sortie(operations_colorees, FICHIER_SORTIE)
     
-    # Génération de la visualisation Gantt (limité aux 4 premières semaines)
+    # VISUALISATION
+    print("   Génération du diagramme de Gantt...")
     generer_gantt(operations_colorees, nombre_chromatique)
 
 

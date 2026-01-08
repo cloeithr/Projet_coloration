@@ -70,7 +70,7 @@ def generer_gantt(liste_operations, nombre_chromatique):
         return
 
     # --- PARAMÈTRE D'AFFICHAGE MODIFIÉ ---
-    LIMIT_SEMAINES = 1 # Limite de visualisation définie par l'utilisateur
+    LIMIT_SEMAINES = 2 # Limite de visualisation définie par l'utilisateur
     JOURS_PAR_SEMAINE = 7 
     
     # Préparation des données pour le tracé
