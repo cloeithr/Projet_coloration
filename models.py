@@ -1,7 +1,7 @@
 from datetime import datetime
 
 class Operation:
-    def __init__(self, machine, code_produit, job_id, date_debut, date_fin):
+    def __init__(self, machine, code_produit, job_id, date_debut, date_fin, uid=None):
         """
         Constructeur du modèle Operation.
         C'est ici qu'on transforme les colonnes du CSV en attributs utilisables.
@@ -11,6 +11,7 @@ class Operation:
         self.job_id = job_id            # Colonne 'codof'
         self.date_debut = date_debut    # Colonne 'dtedeb' (Objet datetime)
         self.date_fin = date_fin        # Colonne 'dtefin' (Objet datetime)
+        self.uid = uid                  # Identifiant unique d'opération (optionnel)
         
         # Attribut futur pour la coloration (initialisé à None)
         self.couleur_assignee = None 

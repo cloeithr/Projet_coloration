@@ -1,8 +1,9 @@
 import csv
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
-# Imports de tes modules
+
 from numerisation import charger_donnees
 from regrouper_par_machine import regrouper_par_machine
 from construire_graph_conflit import construire_graphe_conflits
@@ -19,7 +20,8 @@ def main():
     # --- CONFIGURATION ---
     FICHIER_OPERATIONS = 'operations.csv' 
     FICHIER_MACHINES = 'DataMachine.csv'
-    CRITERE_DE_COLORATION = 'code_produit' 
+    # Pour le voisinage 2 entre opérations (y compris mêmes produits), on colore par opération.
+    CRITERE_DE_COLORATION = 'uid' 
     FICHIER_SORTIE = 'resultat_colore.txt'
     
     # ICI : On force le niveau 2
@@ -50,10 +52,39 @@ def main():
     operations_colorees = affecter_couleurs(toutes_les_operations, couleur_mapping, CRITERE_DE_COLORATION)
     generer_fichier_sortie(operations_colorees, FICHIER_SORTIE)
     
-    # VISUALISATION
-    print("   Génération du diagramme de Gantt...")
-    generer_gantt(operations_colorees, nombre_chromatique)
+    # --- MODIFICATION ICI : FILTRAGE POUR SEMAINES 48 ET 49 ---
+    
+    SEMAINES_CIBLES = [48, 49] # Tu peux changer ça facilement 
+    ANNEE_CIBLE = 2025         # Important de préciser l'année
+    
+    print(f"\n--- Filtrage des données pour les semaines {SEMAINES_CIBLES} ---")
+    
+    operations_filtrees = []
+    for op in operations_colorees:
+        # On récupère le numéro de semaine ISO de la date de début
+        # isocalendar() renvoie (année, semaine, jour)
+        annee_op, semaine_op, _ = op.date_debut.isocalendar()
+        
+        # On garde l'opération si elle commence dans une des semaines ciblées
+        # OU si elle finit dedans (pour ne pas couper les opérations à cheval)
+        annee_fin, semaine_fin, _ = op.date_fin.isocalendar()
+        
+        if annee_op == ANNEE_CIBLE and (semaine_op in SEMAINES_CIBLES or semaine_fin in SEMAINES_CIBLES):
+            operations_filtrees.append(op)
+            
+    print(f"   {len(operations_filtrees)} opérations trouvées sur cette période.")
 
+    # Fenêtre stricte : semaines 48-49 uniquement
+    debut_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[0], 1)
+    fin_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[-1], 7) + timedelta(days=1)
+    
+    # Lancement du Gantt avec la liste FILTRÉE et l'option d'affichage réel
+    generer_gantt(
+        operations_filtrees,
+        nombre_chromatique,
+        affichage_semaines_reelles=True,
+        fenetre_temps=(debut_fenetre, fin_fenetre),
+    )
 
 if __name__ == "__main__":
     main()

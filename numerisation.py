@@ -28,6 +28,7 @@ def charger_donnees(chemin_machines, chemin_operations):
         print(f"❌ Erreur lecture machines: {e}")
 
     # 2. Chargement des Opérations (Planning)
+    uid_compteur = 1
     try:
         with open(chemin_operations, 'r', encoding='utf-8') as f:
             # Le fichier utilise des points-virgules ';'
@@ -45,8 +46,10 @@ def charger_donnees(chemin_machines, chemin_operations):
                         code_produit=row['codprod'],
                         job_id=row['codof'],
                         date_debut=d_debut,
-                        date_fin=d_fin
+                        date_fin=d_fin,
+                        uid=uid_compteur
                     )
+                    uid_compteur += 1
                     
                     # On ne garde l'opération que si la machine existe (Validation simple)
                     if nouvelle_op.machine in liste_machines:
