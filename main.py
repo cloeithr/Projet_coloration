@@ -34,7 +34,7 @@ def main():
     operations_triees = regrouper_par_machine(toutes_les_operations)
     print(f"✅ Données chargées et triées.")
     
-    # PHASE 2 : CONSTRUCTION DU GRAPHE
+    # PHASE 2 : CONSTRUCTION DU GRAPHE (SUR TOUT LE JEU DE DONNÉES)
     print(f"\n--- Construction du Graphe (Mode Voisinage = {NIVEAU_VOISINAGE_CIBLE}) ---")
     graphe_conflit = construire_graphe_conflits(
         operations_triees,
@@ -42,17 +42,18 @@ def main():
         niveau_voisinage=NIVEAU_VOISINAGE_CIBLE,
     )
     
-    # PHASE 3 : COLORATION
+    # PHASE 3 : COLORATION (SUR TOUT LE JEU DE DONNÉES)
     couleur_mapping = colorier_graphe(graphe_conflit)
     nombre_chromatique = calculer_nombre_chromatique(couleur_mapping)
     
     print(f"\n*** RÉSULTAT FINAL : Nombre Chromatique = {nombre_chromatique} ***")
+    print(f"Nombre de couleurs nécessaires (jeu complet) : {nombre_chromatique}")
     
-    # PHASE 4 : SORTIES
+    # PHASE 4 : SORTIES (TOUTES LES OPÉRATIONS)
     operations_colorees = affecter_couleurs(toutes_les_operations, couleur_mapping, CRITERE_DE_COLORATION)
     generer_fichier_sortie(operations_colorees, FICHIER_SORTIE)
     
-    # --- MODIFICATION ICI : FILTRAGE POUR SEMAINES 48 ET 49 ---
+    # --- ZOOM D'AFFICHAGE UNIQUEMENT : FILTRAGE POUR SEMAINES 48 ET 49 ---
     
     SEMAINES_CIBLES = [48, 49] # Tu peux changer ça facilement 
     ANNEE_CIBLE = 2025         # Important de préciser l'année
@@ -78,12 +79,14 @@ def main():
     debut_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[0], 1)
     fin_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[-1], 7) + timedelta(days=1)
     
-    # Lancement du Gantt avec la liste FILTRÉE et l'option d'affichage réel
+    # Lancement du Gantt sur TOUT le jeu de données avec zoom initial
     generer_gantt(
-        operations_filtrees,
+        operations_colorees,
         nombre_chromatique,
         affichage_semaines_reelles=True,
         fenetre_temps=(debut_fenetre, fin_fenetre),
+        navigation_semaines=True,
+        taille_fenetre_semaines=len(SEMAINES_CIBLES),
     )
 
 if __name__ == "__main__":
