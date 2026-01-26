@@ -13,7 +13,16 @@ DEFAULT_PALETTE: List[Tuple[float, float, float]] = [
     (0.70, 0.70, 0.70),  # gris
     (0.55, 0.55, 0.95),  # indigo
     (0.95, 0.55, 0.75),  # rose
+
+
+
+    (0.60, 0.40, 0.20),  # marron
+    (0.20, 0.60, 0.50),  # vert-bleuté
+    (0.90, 0.60, 0.20),  # ambre
+    (0.45, 0.45, 0.20),  # olive
+    (0.20, 0.30, 0.60),  # bleu nuit
 ]
+
 
 def rgb_to_hex(rgb: Tuple[float, float, float]) -> str:
     """Convertit un tuple (R, G, B) en format #RRGGBB."""
