@@ -18,6 +18,22 @@ Le programme doit :
 
 ## Description des modules
 
+### **affecter_couleur.py**
+Affecte l'identifiant de couleur à chaque objet Operation en utilisant le résultat de la coloration du graphe.
+
+### **calculer_nb_chromatiques**
+Calcule le nombre chromatique, c'est-à-dire le nombre minimal de couleurs à partir du résultat de la coloration.
+
+### **colorier_graphe**
+Applique l'algorithme de coloration gloutonne au graphe de conflit pour déterminer le nombre minimal de couleurs nécessaires et attribuer une couleur à chaque nœud.
+
+### **construire_graph_conflit.py**
+Construit le graphe de conflit pour des niveaux différents.
+Niveau 1 : Opérations adjacentes (i, i+1).
+Niveau 2 : Opérations séparées par une (i, i+2).
+
+
+
 ### **operation.py**
 Contient les classes représentant les opérations (tâches du Gantt).
 
@@ -44,6 +60,7 @@ Script principal orchestrant toutes les étapes.
 ##  Jeu de données minimal
 
 ### **Version CSV** :
+
 
 
 
