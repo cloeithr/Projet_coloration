@@ -32,34 +32,23 @@ Construit le graphe de conflit pour des niveaux différents.
 Niveau 1 : Opérations adjacentes (i, i+1).
 Niveau 2 : Opérations séparées par une (i, i+2).
 
+### **gantt_generer.py**
+Génère un diagramme de Gantt.
 
+### **generer_fichier_sortie.py**
+Génère un fichier de sortie CSV contenant toutes les colonnes initiales avec en plus la nouvelle colonne 'Couleur_ID'.
 
-### **operation.py**
-Contient les classes représentant les opérations (tâches du Gantt).
+### **models.py**
+Constructeur du modèle Operation.C'est dans ce code qu'on transforme les colonnes du CSV en attributs utilisables.
 
-### **chargement.py**
-Gère la lecture des fichiers CSV/JSON et crée les objets `Operation`.
+### **numerisation.py**
+Lit les CSV et retourne une liste d'objets Operation et une liste de Machines.
 
-### **graph.py**
-Construit le graphe de voisinage selon :
-- chevauchement dans le temps,
-- critère de différenciation.
-
-### **coloration.py**
-Implémente un algorithme de coloration du graphe (Greedy, Welsh-Powell…).
-
-### **visualisation.py**
-Génère :
-- un fichier texte récapitulatif,
-- un diagramme de Gantt coloré (via `matplotlib`).
+### **regrouper_par_machine.py**
+Regroupe les opérations par machine et trie la liste d'opérations de chaque machine par date de début.
 
 ### **main.py**
 Script principal orchestrant toutes les étapes.
-
-
-##  Jeu de données minimal
-
-### **Version CSV** :
 
 
 
