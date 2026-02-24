@@ -51,7 +51,24 @@ Regroupe les opérations par machine et trie la liste d'opérations de chaque ma
 Script principal orchestrant toutes les étapes.
 
 
+## Documentation sur les fonctions à lancer 
 
+Pour exécuter tout le projet, il faut lancer la commande python main.py . En effet, cette commande charge les données, trie les opérations, construit le graphe, calcule les couleurs, génère le fichier résultat et affiche le Gantt coloré interactif. 
+
+
+## Fonctionnement du projet 
+
+Le fonctionnement global du projet se déroule en plusieurs étapes.
+
+*Chargement des données*
+
+Le programme commence par lire deux fichiers :
+
+- un fichier contenant la liste des machines,
+
+- un fichier contenant l’ensemble des opérations à planifier.
+
+Chaque opération est convertie en un objet structuré, ce qui permet de manipuler facilement les informations dans les étapes suivantes.
 
 
 
