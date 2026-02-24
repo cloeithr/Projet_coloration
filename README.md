@@ -21,10 +21,10 @@ Le programme doit :
 ### **affecter_couleur.py**
 Affecte l'identifiant de couleur à chaque objet Operation en utilisant le résultat de la coloration du graphe.
 
-### **calculer_nb_chromatiques**
+### **calculer_nb_chromatiques.py**
 Calcule le nombre chromatique, c'est-à-dire le nombre minimal de couleurs à partir du résultat de la coloration.
 
-### **colorier_graphe**
+### **colorier_graphe.py**
 Applique l'algorithme de coloration gloutonne au graphe de conflit pour déterminer le nombre minimal de couleurs nécessaires et attribuer une couleur à chaque nœud.
 
 ### **construire_graph_conflit.py**
@@ -49,6 +49,7 @@ Regroupe les opérations par machine et trie la liste d'opérations de chaque ma
 
 ### **main.py**
 Script principal orchestrant toutes les étapes.
+
 
 
 
