@@ -82,10 +82,15 @@ Algorithme glouton :
 Données : 
 
 MAC1 ; ProdA ; 08:00 ; 10:00
+
 MAC1 ; ProdB ; 10:00 ; 12:00
+
 MAC2 ; ProdB ; 09:00 ; 11:00
+
 MAC2 ; ProdC ; 11:00 ; 13:00
+
 MAC3 ; ProdC ; 10:00 ; 12:00
+
 MAC3 ; ProdA ; 12:00 ; 14:00
 
 Les produits A, B et C entrent en conflit, on obtient un triangle :
@@ -167,6 +172,7 @@ Changements réalisés :
 - Passage du critère de coloration à uid
 
 - Adaptation de la construction des graphes
+
 
 
 
