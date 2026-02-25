@@ -18,8 +18,8 @@ Le programme doit :
 
 | Type                       | Élément                      | Source                         | Rôle                                                                      |
 | -------------------------- | ---------------------------- | ------------------------------ | ------------------------------------------------------------------------- |
-| **Donnée planifiée**       | Liste des opérations         | `operations.csv`               | Noyau du programme : contient centre, produit, dates, durée, job_id, etc. |
-| **Donnée de référence**    | Liste des machines           | `DataMachine.csv`              | Structure le tri par machine et la création des graphes.                  |
+| **Donnée planifiée**       | Liste des opérations         | operations.csv                 | Noyau du programme : contient centre, produit, dates, durée, job_id, etc. |
+| **Donnée de référence**    | Liste des machines           | DataMachine.csv                | Structure le tri par machine et la création des graphes.                  |
 | **Paramètre (choix)**      | Critère de coloration        | Saisi ou défini dans `main.py` | Définit ce qui constitue un nœud dans le graphe (codprod, uid…).          |
 | **Paramètre (calcul)**     | Règle de voisinage 1         | Logique interne                | Conflit entre deux opérations consécutives sur la même machine.           |
 | **Paramètre (calcul)**     | Règle de voisinage 2         | Logique interne                | Conflit supplémentaire entre opérations séparées d’un saut.               |
@@ -30,7 +30,7 @@ Le programme doit :
 
 | Type de sortie         | Format             | Contenu                                       | Objectif                                       |
 | ---------------------- | ------------------ | --------------------------------------------- | ---------------------------------------------- |
-| **Résultat textuel**   | Fichier TXT ou CSV | Jeu de données initial + colonne `Couleur_ID` | Permet une exploitation ou un contrôle externe |
+| **Résultat textuel**   | Fichier TXT ou CSV | Jeu de données initial + colonne Couleur_ID   | Permet une exploitation ou un contrôle externe |
 | **Résultat graphique** | Diagramme de Gantt | Gantt coloré selon la coloration obtenue      | Visualisation claire et intuitive              |
 | **Métrique clé**       | Entier             | Nombre chromatique du graphe                  | Nombre minimal de couleurs nécessaires         |
 
@@ -95,15 +95,25 @@ A <-> B <-> C <-> A -> nombre chromatique = 3
 ## Structure du projet 
 
 ├── affecter_couleurs.py
+
 ├── calculer_nb_chromatiques.py
+
 ├── colorier_graphe.py
+
 ├── construire_graph_conflit.py
+
 ├── gantt_generer.py
+
 ├── generer_fichier_sortie.py
+
 ├── models.py
+
 ├── numerisation.py
+
 ├── regrouper_par_machine.py
+
 ├── main.py
+
 └── README.md
 
 ## Description des modules
@@ -157,6 +167,7 @@ Changements réalisés :
 - Passage du critère de coloration à uid
 
 - Adaptation de la construction des graphes
+
 
 
 
