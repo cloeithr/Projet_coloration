@@ -24,8 +24,7 @@ def main():
     CRITERE_DE_COLORATION = 'uid' 
     FICHIER_SORTIE = 'resultat_colore.txt'
     
-    # ICI : On force le niveau 2
-    NIVEAU_VOISINAGE_CIBLE = 2 
+    NIVEAU_VOISINAGE_CIBLE = 2
 
     print("--- Démarrage du Programme de Coloration de Gantt ---")
     
