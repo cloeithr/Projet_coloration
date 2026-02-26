@@ -32,7 +32,7 @@ def main():
     # PHASE 1 : CHARGEMENT
     machines_ref, toutes_les_operations = charger_donnees(FICHIER_MACHINES, FICHIER_OPERATIONS)
     operations_triees = regrouper_par_machine(toutes_les_operations)
-    print(f"✅ Données chargées et triées.")
+    print(f"Données chargées et triées.")
     
     # PHASE 2 : CONSTRUCTION DU GRAPHE (SUR TOUT LE JEU DE DONNÉES)
     print(f"\n--- Construction du Graphe (Mode Voisinage = {NIVEAU_VOISINAGE_CIBLE}) ---")
@@ -53,40 +53,15 @@ def main():
     operations_colorees = affecter_couleurs(toutes_les_operations, couleur_mapping, CRITERE_DE_COLORATION)
     generer_fichier_sortie(operations_colorees, FICHIER_SORTIE)
     
-    # --- ZOOM D'AFFICHAGE UNIQUEMENT : FILTRAGE POUR SEMAINES 48 ET 49 ---
-    
-    SEMAINES_CIBLES = [48, 49] # Tu peux changer ça facilement 
-    ANNEE_CIBLE = 2025         # Important de préciser l'année
-    
-    print(f"\n--- Filtrage des données pour les semaines {SEMAINES_CIBLES} ---")
-    
-    operations_filtrees = []
-    for op in operations_colorees:
-        # On récupère le numéro de semaine ISO de la date de début
-        # isocalendar() renvoie (année, semaine, jour)
-        annee_op, semaine_op, _ = op.date_debut.isocalendar()
-        
-        # On garde l'opération si elle commence dans une des semaines ciblées
-        # OU si elle finit dedans (pour ne pas couper les opérations à cheval)
-        annee_fin, semaine_fin, _ = op.date_fin.isocalendar()
-        
-        if annee_op == ANNEE_CIBLE and (semaine_op in SEMAINES_CIBLES or semaine_fin in SEMAINES_CIBLES):
-            operations_filtrees.append(op)
-            
-    print(f"   {len(operations_filtrees)} opérations trouvées sur cette période.")
-
-    # Fenêtre stricte : semaines 48-49 uniquement
-    debut_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[0], 1)
-    fin_fenetre = datetime.fromisocalendar(ANNEE_CIBLE, SEMAINES_CIBLES[-1], 7) + timedelta(days=1)
-    
-    # Lancement du Gantt sur TOUT le jeu de données avec zoom initial
+    # Lancement du Gantt sur TOUT le jeu de données
     generer_gantt(
         operations_colorees,
         nombre_chromatique,
         affichage_semaines_reelles=True,
-        fenetre_temps=(debut_fenetre, fin_fenetre),
         navigation_semaines=True,
-        taille_fenetre_semaines=len(SEMAINES_CIBLES),
+        taille_fenetre_semaines=8,
+        affichage_toutes_semaines=True,
+        navigation_souris=True,
     )
 
 if __name__ == "__main__":

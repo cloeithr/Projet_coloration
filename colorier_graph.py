@@ -73,7 +73,7 @@ if __name__ == "__main__":
     
     assert len(couleurs_uniques) >= 3, "Le triangle n'a pas été colorié avec au moins 3 couleurs."
     assert resultat_coloration['ProdD'] == 1, "Le nœud isolé (ProdD) n'a pas réutilisé la Couleur 1."
-    print(f"✅ Test 3: Coloration du Graphe (Nombre chromatique = {len(couleurs_uniques)}) OK.")
+    print(f"Test 3: Coloration du Graphe (Nombre chromatique = {len(couleurs_uniques)}) OK.")
 
 
 

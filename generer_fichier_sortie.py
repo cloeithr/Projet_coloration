@@ -50,7 +50,7 @@ def generer_fichier_sortie(liste_operations, nom_fichier_sortie, critere='code_p
                 
                 writer.writerow(ligne_data)
         
-        print(f"✅ Fichier de sortie généré avec succès : {nom_fichier_sortie}")
+        print(f"Fichier de sortie généré avec succès : {nom_fichier_sortie}")
         
     except Exception as e:
-        print(f"❌ Erreur lors de la génération du fichier de sortie : {e}")
+        print(f"Erreur lors de la génération du fichier de sortie : {e}")

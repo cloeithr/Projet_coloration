@@ -49,7 +49,7 @@ def construire_graphe_conflits(operations_par_machine, critere='code_produit', n
 
                 # Conflit si ce n'est pas le même produit
                 if val_courante != val_loin:
-                    # On ajoute l'arête (c'est un set, donc pas de doublons)
+                    # On ajoute l'arête 
                     if val_loin not in graphe_conflit[val_courante]:
                         stats["N2"] += 1
                         

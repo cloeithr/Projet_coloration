@@ -55,6 +55,6 @@ if __name__ == "__main__":
         
         print(f"  - Première op. : {premiere_op.code_produit} à {premiere_op.date_debut}")
         print(f"  - Dernière op. : {derniere_op.code_produit} à {derniere_op.date_debut}")
-        print("✅ Le tri semble correct si la première date est antérieure à la dernière.")
+        print(" Le tri semble correct si la première date est antérieure à la dernière.")
     else:
         print(f"La machine {machine_test} n'a pas été trouvée dans les données triées.")

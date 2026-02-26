@@ -46,5 +46,5 @@ if __name__ == "__main__":
     # 2. Validation (Test 4)
     # Nous nous attendons à ce que le max soit 3 (Couleurs 1, 2, 3)
     assert nombre_chromatique == 3, f"Erreur: Nombre chromatique attendu 3, obtenu {nombre_chromatique}"
-    print("✅ Test du calcul du nombre chromatique réussi.")
+    print("Test du calcul du nombre chromatique réussi.")
 
